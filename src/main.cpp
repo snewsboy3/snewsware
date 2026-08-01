@@ -32,7 +32,6 @@ LRESULT CALLBACK KeyboardHook(int code,WPARAM wp,LPARAM lp){ if(code<0)return Ca
 
 struct Shot{int w=0,h=0;std::vector<COLORREF> px; COLORREF at(int x,int y)const{return (x>=0&&y>=0&&x<w&&y<h)?px[(size_t)y*w+x]:0;}};
 Shot Capture(){Shot s; RECT r{};GetWindowRect(GetForegroundWindow(),&r);s.w=r.right-r.left;s.h=r.bottom-r.top;if(s.w<1||s.h<1)return s;HDC sc=GetDC(nullptr),mem=CreateCompatibleDC(sc);HBITMAP b=CreateCompatibleBitmap(sc,s.w,s.h);auto old=SelectObject(mem,b);BitBlt(mem,0,0,s.w,s.h,sc,r.left,r.top,SRCCOPY);BITMAPINFO bi{};bi.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);bi.bmiHeader.biWidth=s.w;bi.bmiHeader.biHeight=-s.h;bi.bmiHeader.biPlanes=1;bi.bmiHeader.biBitCount=32;bi.bmiHeader.biCompression=BI_RGB;s.px.resize((size_t)s.w*s.h);GetDIBits(mem,b,0,s.h,s.px.data(),&bi,DIB_RGB_COLORS);SelectObject(mem,old);DeleteObject(b);DeleteDC(mem);ReleaseDC(nullptr,sc);return s;}
-bool near(COLORREF c,int r,int g,int b,int d){return abs((int)GetRValue(c)-r)<d&&abs((int)GetGValue(c)-g)<d&&abs((int)GetBValue(c)-b)<d;}
 struct Box{int l=0,t=0,r=0,b=0;int area()const{return std::max(0,r-l)*std::max(0,b-t);}};
 Box ColorBounds(const Shot&s,bool(*match)(COLORREF)){Box b{s.w,s.h,0,0};int count=0;for(int y=s.h/3;y<s.h;y+=2)for(int x=0;x<s.w;x+=2)if(match(s.at(x,y))){b.l=std::min(b.l,x);b.r=std::max(b.r,x);b.t=std::min(b.t,y);b.b=std::max(b.b,y);count++;}if(count<20)return {};return b;}
 bool Green(COLORREF c){return GetGValue(c)>145&&GetGValue(c)>GetRValue(c)*1.25&&GetGValue(c)>GetBValue(c)*1.05;}
