@@ -1,0 +1,1 @@
+Snewsware assets
