@@ -1,8 +1,8 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <dwmapi.h>
-#include <gdiplus.h>
 #include <objidl.h>
+#include <gdiplus.h>
 #include <algorithm>
 #include <atomic>
 #include <chrono>
@@ -420,7 +420,7 @@ void DrawToggle(Graphics& graphics, float x, float y, bool enabled) {
     FillRounded(graphics, track, 13, enabled ? static_cast<Brush&>(active) : static_cast<Brush&>(inactive));
     SolidBrush knob(kText);
     const float knobX = enabled ? x + 25 : x + 3;
-    graphics.FillEllipse(&knob, knobX, y + 3, 20, 20);
+    graphics.FillEllipse(&knob, knobX, y + 3.0f, 20.0f, 20.0f);
 }
 
 void DrawSidebar(Graphics& graphics, int height) {
@@ -454,7 +454,7 @@ void DrawTopBar(Graphics& graphics, int width) {
     DrawLabel(graphics, L"SNEWSWARE", 116, 22, 15, kText, FontStyleBold);
     DrawLabel(graphics, L"BEDWARS UTILITY", 220, 25, 9, kOrangeSoft, FontStyleBold);
     SolidBrush live(Color(255, 19, 48, 34)); FillRounded(graphics, RectF(width - 172.0f, 18, 126, 30), 8, live);
-    SolidBrush dot(kGreen); graphics.FillEllipse(&dot, width - 157.0f, 30, 7, 7);
+    SolidBrush dot(kGreen); graphics.FillEllipse(&dot, static_cast<float>(width) - 157.0f, 30.0f, 7.0f, 7.0f);
     DrawLabel(graphics, L"SYSTEM READY", width - 140.0f, 25, 10, Color(255, 153, 215, 178), FontStyleBold);
     Pen border(Color(255, 43, 39, 39), 1); graphics.DrawLine(&border, 88, 66, width, 66);
 }
@@ -589,7 +589,7 @@ void RenderInterface(HDC target) {
 
     LinearGradientBrush background(RectF(0,0,static_cast<float>(width),static_cast<float>(height)), Color(255,18,19,24), kCanvas, LinearGradientModeForwardDiagonal);
     graphics.FillRectangle(&background, 0, 0, width, height);
-    GraphicsPath glowPath; glowPath.AddEllipse(width-470.0f, 50, 520, 520);
+    GraphicsPath glowPath; glowPath.AddEllipse(static_cast<float>(width) - 470.0f, 50.0f, 520.0f, 520.0f);
     PathGradientBrush glow(&glowPath); glow.SetCenterColor(Color(72,181,55,30)); Color surround(0,181,55,30); int count=1; glow.SetSurroundColors(&surround,&count); graphics.FillPath(&glow,&glowPath);
 
     DrawSidebar(graphics, height);
